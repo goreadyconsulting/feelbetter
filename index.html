@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+  <meta name="theme-color" content="#a8dcff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Feel Better — Penguin Emergency</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="app">
+  <canvas id="game" aria-label="Feel Better Penguin game"></canvas>
+  <div class="aurora"></div>
+
+  <div class="hud" id="hud">
+    <div class="pill">✨ <span class="score-num" id="score">0</span></div>
+    <div class="pill mood-wrap">
+      <div class="mood-inner">
+        <div class="mood-row"><span>mood rescue</span><span id="moodText">12%</span></div>
+        <div class="bar"><i id="moodBar"></i></div>
+      </div>
+    </div>
+    <div class="pill">🐟 <span id="lives">3</span></div>
+  </div>
+
+  <div class="streak" id="streak">🔥 x2 COMBO</div>
+  <div class="toast" id="toast">Professional fish acquired.</div>
+
+  <div class="controls" id="controls">
+    <button class="control-btn" id="left" aria-label="Move left">←</button>
+    <button class="control-btn boost" id="boost" aria-label="Activate penguin boost" disabled>⚡</button>
+    <button class="control-btn" id="right" aria-label="Move right">→</button>
+  </div>
+
+  <section class="screen" id="startScreen">
+    <div class="card">
+      <div class="eyebrow">🚨 certified tiny emergency</div>
+      <div class="hero-penguin" aria-hidden="true">
+        <div class="peng-body"></div><div class="peng-belly"></div>
+        <div class="peng-eye e1"></div><div class="peng-eye e2"></div><div class="peng-beak"></div>
+        <div class="peng-wing w1"></div><div class="peng-wing w2"></div>
+        <div class="peng-foot f1"></div><div class="peng-foot f2"></div><div class="peng-hat"></div>
+      </div>
+      <h1>FEEL <span>BETTER.</span></h1>
+      <p class="lead">A highly qualified penguin has been dispatched to improve the situation. Please assist. No paperwork required.</p>
+      <div class="how">
+        <div><b>↔️</b><span>Waddle around</span></div>
+        <div><b>🍫</b><span>Catch nice things</span></div>
+        <div><b>📧</b><span>Avoid nonsense</span></div>
+      </div>
+      <button class="cta" id="startBtn">DEPLOY PENGUIN</button>
+      <div class="tiny">Best score: <b id="bestStart">0</b> · Drag anywhere or use the buttons</div>
+    </div>
+  </section>
+
+  <section class="screen hidden" id="endScreen">
+    <div class="card">
+      <div class="eyebrow" id="endBadge">MISSION REPORT</div>
+      <div class="end-emoji" id="endEmoji">🐧</div>
+      <h2 class="end-title" id="endTitle">THE PENGUIN DID HIS BEST.</h2>
+      <p class="result-line" id="endLine">Objectively, things are at least a little less ridiculous now.</p>
+      <div class="end-score">
+        <div class="stat"><strong id="finalScore">0</strong><span>score</span></div>
+        <div class="stat"><strong id="finalMood">0%</strong><span>mood</span></div>
+        <div class="stat"><strong id="finalBest">0</strong><span>best</span></div>
+      </div>
+      <div class="actions">
+        <button class="ghost" id="shareBtn">Share chaos</button>
+        <button class="cta again" id="againBtn">Again 🐧</button>
+      </div>
+    </div>
+  </section>
+
+  <button class="sound-btn" id="soundBtn" aria-label="Toggle sound">🔊</button>
+  <div class="rotate-note">🐧<br><br>This penguin has union rules.<br>Please rotate back to portrait.</div>
+</div>
+<script src="game.js"></script>
+</body>
+</html>

@@ -6,19 +6,20 @@
   const scoreEl=$('score'), moodBar=$('moodBar'), moodText=$('moodText'), livesEl=$('lives'), toast=$('toast'), streakEl=$('streak');
   const leftBtn=$('left'), rightBtn=$('right'), boostBtn=$('boost');
 
-  let W=0,H=0,dpr=1,last=0,running=false,score=0,mood=12,lives=3,combo=0;
+  let W=0,H=0,dpr=1,last=0,running=false,score=0,mood=5,lives=4,combo=0,runTime=0;
+  const MIN_WIN_TIME=30;
   let best=Number(localStorage.getItem('feelbetter-best')||0);
   let items=[],particles=[],snow=[],spawnTimer=0,difficulty=1,shake=0,boostCharge=0,boostTime=0;
   let dragging=false,soundOn=true,audioCtx=null,toastTimer=null;
   const player={x:0,y:0,w:70,h:82,vx:0,targetX:0,blink:0,tilt:0};
 
   const good=[
-    {e:'🐟',pts:12,mood:8,msg:'Professional fish acquired.'},
-    {e:'☕',pts:15,mood:10,msg:'Cocoa deployed. Morale suspiciously improved.'},
-    {e:'🫂',pts:18,mood:12,msg:'Emergency hug received. Very official.'},
-    {e:'👑',pts:25,mood:16,msg:'Tiny crown. Huge authority.',rare:true},
-    {e:'🍰',pts:16,mood:11,msg:'Cake protocol activated.'},
-    {e:'✨',pts:10,mood:7,msg:'Sparkle obtained without permit.'}
+    {e:'🐟',pts:12,mood:3,msg:'Professional fish acquired.'},
+    {e:'☕',pts:15,mood:4,msg:'Cocoa deployed. Morale suspiciously improved.'},
+    {e:'🫂',pts:18,mood:5,msg:'Emergency hug received. Very official.'},
+    {e:'👑',pts:25,mood:6,msg:'Tiny crown. Huge authority.',rare:true},
+    {e:'🍰',pts:16,mood:4,msg:'Cake protocol activated.'},
+    {e:'✨',pts:10,mood:3,msg:'Sparkle obtained without permit.'}
   ];
   const bad=[
     {e:'📧',msg:'An email happened. Deeply unnecessary.'},
@@ -90,7 +91,7 @@
   }
 
   function startGame(){
-    initAudio(); running=true; score=0; mood=12; lives=3; combo=0;
+    initAudio(); running=true; score=0; mood=5; lives=4; combo=0; runTime=0;
     items=[]; particles=[]; spawnTimer=0; difficulty=1; shake=0; boostCharge=0; boostTime=0;
     player.x=W/2; player.targetX=W/2; player.vx=0; player.blink=0;
     startScreen.classList.add('hidden'); endScreen.classList.add('hidden');
@@ -156,13 +157,16 @@
       goodSound(); vibrate(14); burst(item.x,item.y,true);
       if(combo===5||combo===9) showToast(quips[Math.floor(Math.random()*quips.length)]);
       else if(Math.random()<.48) showToast(item.msg);
-      if(mood>=100){ mood=100; updateHUD(); setTimeout(()=>endGame(true),250); }
+      if(mood>=100){
+        if(runTime>=MIN_WIN_TIME){ mood=100; updateHUD(); setTimeout(()=>endGame(true),250); }
+        else { mood=99; updateHUD(); }
+      }
     }else{
       if(boostTime>0){
         score+=4; burst(item.x,item.y,true); beep(830,.06,'square',.02);
         showToast('Boost said: absolutely not.');
       }else{
-        lives--; combo=0; mood=Math.max(0,mood-9); shake=12;
+        lives--; combo=0; mood=Math.max(0,mood-5); shake=12;
         badSound(); vibrate([30,35,30]); burst(item.x,item.y,false); showToast(item.msg);
         if(lives<=0) setTimeout(()=>endGame(false),120);
       }
@@ -179,7 +183,8 @@
   }
 
   function update(dt){
-    difficulty=Math.min(1.72,difficulty+dt*.012);
+    runTime+=dt;
+    difficulty=Math.min(1.58,difficulty+dt*.009);
     spawnTimer-=dt;
     if(spawnTimer<=0){ spawn(); spawnTimer=rand(.42,.74)/difficulty; }
     if(boostTime>0) boostTime=Math.max(0,boostTime-dt);
@@ -286,8 +291,21 @@
         ctx.font='1000 13px system-ui'; ctx.fillStyle='#ff6674'; roundedRect(-23,-18,46,36,11); ctx.fill();
         ctx.fillStyle='white'; ctx.fillText('MON',0,1);
       }else{
-        ctx.font=o.size+'px "Apple Color Emoji","Segoe UI Emoji",sans-serif';
-        ctx.fillText(o.e,0,0);
+        ctx.globalAlpha=1;
+        ctx.globalCompositeOperation='source-over';
+        const tokenR=Math.max(25,o.size*.67);
+        ctx.shadowColor='rgba(18,34,58,.20)';
+        ctx.shadowBlur=10;
+        ctx.shadowOffsetY=4;
+        ctx.fillStyle=o.good?'#f3fff9':'#fff2f4';
+        ctx.beginPath(); ctx.arc(0,0,tokenR,0,Math.PI*2); ctx.fill();
+        ctx.shadowColor='transparent'; ctx.shadowBlur=0; ctx.shadowOffsetY=0;
+        ctx.lineWidth=3;
+        ctx.strokeStyle=o.good?'#39b98f':'#ff6172';
+        ctx.beginPath(); ctx.arc(0,0,tokenR,0,Math.PI*2); ctx.stroke();
+        ctx.font=Math.max(32,o.size*.92)+'px "Apple Color Emoji","Segoe UI Emoji",sans-serif';
+        ctx.fillStyle='#17253a';
+        ctx.fillText(o.e,0,1);
       }
       ctx.restore();
     }
